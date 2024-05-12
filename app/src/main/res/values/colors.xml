@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="cardview_color">#F0FAF1</color>
+
+
+    <color name="green_100">#D8F5CD</color>
+    <color name="green_200">#ACEB9F</color>
+    <color name="green_300">#6DC565</color>
+    <color name="green_400">#368C37</color>
+    <color name="green_500">#0C4011</color>
+
+</resources>

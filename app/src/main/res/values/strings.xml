@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">TrashApp</string>
+    <string name="history">History</string>
+    <string name="article">article</string>
+    <string name="ecobin">EcoBin</string>
+    <string name="classify_your_waste">Classify your waste!</string>
+    <string name="please_select_a_photo_of_waste_to_analyze_the_waste_classification">Please select a photo of waste to analyze the waste classification</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
+    <string name="select_image">Select image!</string>
+    <string name="prediction">Prediction:</string>
+    <string name="accuracy">Accuracy</string>
+</resources>
