@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".TrashApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -18,8 +19,17 @@
         android:theme="@style/Theme.TrashApp"
         tools:targetApi="31">
         <activity
+            android:name=".presentation.ui.HistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.ui.ResultActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.ui.HomeActivity"
-            android:exported="true" >
+            android:exported="false" />
+        <activity
+            android:name=".presentation.ui.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,10 +37,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:exported="false">
-
-        </activity>
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/Base.Theme.TrashApp" />
     </application>
 
 </manifest>

@@ -10,4 +10,23 @@
     <string name="select_image">Select image!</string>
     <string name="prediction">Prediction:</string>
     <string name="accuracy">Accuracy</string>
+    <string name="result">Hasil Analisis</string>
+    <string name="_0_persen">0%</string>
+    <string name="result_guest">Hasil deteksi</string>
+    <string name="simpan">Simpan</string>
+    <string name="image_scroll">Ini gambar yang dipilih</string>
+    <string name="preview_gambar">Preview Gambar</string>
+    <string name="pilihlah_gambar_dari_galeri_terlebih_dahulu">Pilihlah gambar dari galeri atau gunakan kamera</string>
+    <string name="reset">Reset</string>
+    <string name="analyze">Analyze</string>
+    <string name="image_classifier_failed">Image classifier failed to initialize. See error logs for details</string>
+    <string name="score_percent">%1$d%%</string>
+    <string name="metal_guide">Benda ini terbuat dari logam, yang merupakan bahan yang dapat didaur ulang. Pastikan untuk membuangnya ke dalam tempat sampah yang sesuai agar dapat didaur ulang dan membantu menjaga lingkungan.</string>
+    <string name="glass_guide">Benda ini terbuat dari kaca, yang juga merupakan bahan yang dapat didaur ulang. Mohon membuangnya ke dalam tempat sampah kaca agar dapat didaur ulang dan mengurangi pencemaran lingkungan.</string>
+    <string name="organic_guide">Benda ini termasuk sampah organik, seperti sisa makanan atau limbah tumbuhan. Anda dapat membuangnya ke dalam komposter untuk diubah menjadi pupuk atau membuangnya ke dalam tempat sampah organik untuk pengolahan lebih lanjut.</string>
+    <string name="paper_guide">Benda ini terbuat dari kertas, yang bisa didaur ulang untuk mengurangi pembuatan kertas baru dan penggunaan sumber daya alam. Mohon membuangnya ke dalam tempat sampah kertas agar dapat didaur ulang dengan baik.</string>
+    <string name="cardboard_guide">Benda ini terbuat dari kardus, yang juga bisa didaur ulang. Pastikan untuk melipatnya dengan rapi dan membuangnya ke dalam tempat sampah kardus agar dapat didaur ulang dengan efisien.</string>
+    <string name="plastic_guide">Benda ini terbuat dari plastik, yang bisa menjadi masalah lingkungan jika tidak didaur ulang dengan benar. Pastikan untuk membuangnya ke dalam tempat sampah plastik yang sesuai agar dapat didaur ulang dan mengurangi limbah plastik yang mencemari lingkungan.</string>
+    <string name="default_guide">Hasil analisis tidak sesuai dengan jenis sampah yang dikenali. Mohon pastikan untuk membuangnya ke dalam tempat sampah yang sesuai agar dapat diolah dengan benar sesuai peraturan daerah Anda.</string>
+
 </resources>
