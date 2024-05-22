@@ -5,11 +5,8 @@ import androidx.room.Room
 import com.capstone.trashapp.BuildConfig
 import com.capstone.trashapp.data.local.database.AppDatabase
 import com.capstone.trashapp.data.remote.ArticleApiService
-import com.capstone.trashapp.data.remote.MlApiService
 import com.capstone.trashapp.data.repository.AppRepositoryImpl
-import com.capstone.trashapp.data.repository.PredictRepositoryImpl
 import com.capstone.trashapp.domain.repository.AppRepository
-import com.capstone.trashapp.domain.repository.PredictRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,21 +21,21 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Provides
-    @Singleton
-    fun providesApiML(): MlApiService {
-        val loggingInterceptor =
-            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-        val client = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://127.0.0.1:5000/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
-        return retrofit.create(MlApiService::class.java)
-    }
+//    @Provides
+//    @Singleton
+//    fun providesApiML(): MlApiService {
+//        val loggingInterceptor =
+//            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+//        val client = OkHttpClient.Builder()
+//            .addInterceptor(loggingInterceptor)
+//            .build()
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://127.0.0.1:5000/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .client(client)
+//            .build()
+//        return retrofit.create(MlApiService::class.java)
+//    }
 
     @Provides
     @Singleton
@@ -64,14 +61,6 @@ object AppModule {
                 application, AppDatabase::class.java, "TrashApp.db"
             )
             .build()
-    }
-
-    @Provides
-    @Singleton
-    fun providesPredictRepository(
-        mlApiService: MlApiService
-    ): PredictRepository {
-        return PredictRepositoryImpl(mlApiService)
     }
 
     @Provides

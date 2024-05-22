@@ -15,7 +15,7 @@ class AppRepositoryImpl(
     private val database: AppDatabase
 ): AppRepository {
 
-    override suspend fun fetchCancerHeadlines(): LiveData<Async<List<Article>>> =
+    override suspend fun fetchWasteHeadlines(): LiveData<Async<List<Article>>> =
         liveData {
             emit(Async.Loading)
             try {

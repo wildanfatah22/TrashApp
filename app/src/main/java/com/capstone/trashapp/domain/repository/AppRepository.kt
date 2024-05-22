@@ -6,7 +6,7 @@ import com.capstone.trashapp.data.response.Article
 import com.capstone.trashapp.utils.Async
 
 interface AppRepository {
-    suspend fun fetchCancerHeadlines(): LiveData<Async<List<Article>>>
+    suspend fun fetchWasteHeadlines(): LiveData<Async<List<Article>>>
     suspend fun fetchScanHistory(handleLoading: Boolean): LiveData<Async<List<Scan>>>
     suspend fun saveScanToHistory(scan: Scan)
     suspend fun deleteScanHistory(scan: Scan)

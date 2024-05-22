@@ -8,24 +8,22 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import com.capstone.trashapp.R
 import com.capstone.trashapp.databinding.ActivityMainBinding
-import com.capstone.trashapp.presentation.viewmodel.MainViewModel
+import com.capstone.trashapp.utils.ImageClassifierHelper
 import com.google.android.material.snackbar.Snackbar
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
+import org.tensorflow.lite.task.vision.classifier.Classifications
 import java.io.File
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
-    private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private var currentImageUri: Uri? = null
     private val launcherGallery = registerForActivityResult(
@@ -37,6 +35,7 @@ class MainActivity : AppCompatActivity() {
             uCrop(uri)
         }
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -55,8 +54,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         initListeners()
-        observeViewModel()
-        
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -101,20 +98,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeViewModel() {
-        viewModel.classificationResult.observe(this) { result ->
-            result?.let {
-                val accuracy = it.accuracy?.times(100)?.toInt() ?: 0
-                val prediction = it.prediction ?: "Unknown"
-                moveToResult(accuracy, prediction)
-            }
-        }
-
-        viewModel.isLoading.observe(this) { isLoading ->
-            binding.progressIndicator.isVisible = isLoading
-        }
-    }
-
     private fun startGallery() {
         launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
@@ -142,14 +125,40 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun analyzeImage() {
-        val imageUri = currentImageUri
-        if (imageUri == null) {
-            Snackbar.make(binding.root, "Gambar belum dipilih", Snackbar.LENGTH_LONG)
-                .setAction("BUKA GALERI") { startGallery() }
-                .show()
+        val tempImageUri = currentImageUri
+        if (tempImageUri == null || tempImageUri == Uri.EMPTY) {
+            showGallerySnackbar()
             return
         }
-        viewModel.classifyImage(imageUri)
+        binding.progressIndicator.isVisible = true
+        ImageClassifierHelper(
+            context = this,
+            classifierListener = object : ImageClassifierHelper.ClassifierListener {
+                override fun onError(error: String) {
+                    runOnUiThread {
+                        showToast("Terjadi error saat klasifikasi")
+                    }
+                }
+
+                override fun onResults(results: List<Classifications>?, inferenceTime: Long) {
+                    runOnUiThread {
+                        results?.let { it ->
+                            if (it.isNotEmpty() && it[0].categories.isNotEmpty()) {
+                                val sortedCategories =
+                                    it[0].categories.sortedByDescending { it?.score }
+                                val score = (sortedCategories[0].score * 100).roundToInt()
+                                val label = sortedCategories[0].label
+                                moveToResult(
+                                    score,
+                                    label
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        ).classifyStaticImage(tempImageUri)
+
     }
 
     private fun uCrop(sourceUri: Uri) {
@@ -172,7 +181,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun moveToResult(score: Int, label: String) {
         val intent = Intent(this, ResultActivity::class.java).apply {
-
+            putExtra(ResultActivity.EXTRA_SCORE, score)
+            putExtra(ResultActivity.EXTRA_IMAGE_URI, currentImageUri.toString())
+            putExtra(ResultActivity.EXTRA_LABEL, label)
+            putExtra(ResultActivity.EXTRA_NEW_RESULT, true)
         }
         startActivity(intent)
     }

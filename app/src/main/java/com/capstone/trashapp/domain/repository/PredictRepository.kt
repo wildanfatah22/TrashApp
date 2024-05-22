@@ -7,8 +7,8 @@ import okhttp3.MultipartBody
 import retrofit2.Call
 
 
-interface PredictRepository {
-    fun predictImage(image: MultipartBody.Part): Call<PredictResponse>
-
-    fun classifyImage(imageUri: Uri): LiveData<Result<PredictResponse>>
-}
+//interface PredictRepository {
+//    fun predictImage(image: MultipartBody.Part): Call<PredictResponse>
+//
+//    fun classifyImage(imageUri: Uri): LiveData<Result<PredictResponse>>
+//}
