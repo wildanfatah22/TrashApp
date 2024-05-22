@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,18 +15,18 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.capstone.trashapp.R
 import com.capstone.trashapp.databinding.ActivityMainBinding
-import com.capstone.trashapp.utils.ImageClassifierHelper
+import com.capstone.trashapp.utils.TFLiteHelper
 import com.google.android.material.snackbar.Snackbar
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
-import org.tensorflow.lite.task.vision.classifier.Classifications
 import java.io.File
-import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var currentImageUri: Uri? = null
+    private var tfHelper: TFLiteHelper? = null
+
     private val launcherGallery = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        tfHelper = TFLiteHelper(this)
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey("currentImageUri")) {
                 currentImageUri = Uri.parse(savedInstanceState.getString("currentImageUri"))
@@ -125,40 +127,20 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun analyzeImage() {
-        val tempImageUri = currentImageUri
-        if (tempImageUri == null || tempImageUri == Uri.EMPTY) {
+        if (currentImageUri == null) {
             showGallerySnackbar()
             return
         }
-        binding.progressIndicator.isVisible = true
-        ImageClassifierHelper(
-            context = this,
-            classifierListener = object : ImageClassifierHelper.ClassifierListener {
-                override fun onError(error: String) {
-                    runOnUiThread {
-                        showToast("Terjadi error saat klasifikasi")
-                    }
-                }
+        val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, currentImageUri)
 
-                override fun onResults(results: List<Classifications>?, inferenceTime: Long) {
-                    runOnUiThread {
-                        results?.let { it ->
-                            if (it.isNotEmpty() && it[0].categories.isNotEmpty()) {
-                                val sortedCategories =
-                                    it[0].categories.sortedByDescending { it?.score }
-                                val score = (sortedCategories[0].score * 100).roundToInt()
-                                val label = sortedCategories[0].label
-                                moveToResult(
-                                    score,
-                                    label
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        ).classifyStaticImage(tempImageUri)
+        // Perform image classification using TFLiteHelper
+        val label = tfHelper?.classifyImage(bitmap)
 
+        // Move to result activity or display result as needed
+        label?.let {
+            // Example: move to result activity
+            moveToResult(0, it)
+        }
     }
 
     private fun uCrop(sourceUri: Uri) {
