@@ -1,18 +1,25 @@
 package com.capstone.trashapp.presentation.ui
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import com.capstone.trashapp.BuildConfig
 import com.capstone.trashapp.R
 import com.capstone.trashapp.databinding.ActivityMainBinding
 import com.capstone.trashapp.utils.TFLiteHelper
@@ -21,6 +28,11 @@ import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
 import org.tensorflow.lite.task.vision.classifier.Classifications
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -36,6 +48,23 @@ class MainActivity : AppCompatActivity() {
             return@registerForActivityResult
         } else {
             uCrop(uri)
+        }
+    }
+
+    private val launcherCamera = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success: Boolean ->
+        if (success) {
+            currentImageUri?.let { uri ->
+                uCrop(uri)
+            }
+        }
+    }
+
+    private val imageCaptureLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        // Store the captured image and proceed to crop
+        if (bitmap != null) {
+            storeImage(bitmap)
         }
     }
 
@@ -70,7 +99,7 @@ class MainActivity : AppCompatActivity() {
     private fun initListeners() {
         with(binding) {
             btnCamera.setOnClickListener {
-                // TODO
+                checkCameraPermission()
             }
             btnGallery.setOnClickListener {
                 startGallery()
@@ -102,6 +131,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun openCamera() {
+        imageCaptureLauncher.launch(null)
+    }
+
+    private fun storeImage(bitmap: Bitmap) {
+        val fileUri = saveBitmapToFile(bitmap)
+        if (fileUri != null) {
+            uCrop(fileUri)
+        } else {
+            showToast("Failed to save image")
+        }
+    }
+
+    private fun saveBitmapToFile(bitmap: Bitmap): Uri? {
+        val fileName = "captured_image.jpg"
+        val file = File(cacheDir, fileName)
+        return try {
+            FileOutputStream(file).use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            }
+            file.toUri()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     private fun startGallery() {
         launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
@@ -129,11 +185,12 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun analyzeImage() {
-        if (currentImageUri == null) {
+        val tempCurrentImageUri = currentImageUri
+        if (tempCurrentImageUri == null) {
             showGallerySnackbar()
             return
         }
-        val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, currentImageUri)
+        val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, tempCurrentImageUri)
 
         // Perform image classification using TFLiteHelper
         val classificationResult = tfHelper?.classifyImage(bitmap)
@@ -187,6 +244,29 @@ class MainActivity : AppCompatActivity() {
             startGallery()
         }.show()
 
+    }
+
+    private val cameraPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            // Permission is granted, launch camera activity
+            openCamera()
+        } else {
+            // Permission is denied, show an explanation or request again
+            Toast.makeText(this, "Camera permission is required", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkCameraPermission() {
+        when {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
+                // Permission is already granted, launch camera activity
+                openCamera()
+            }
+            else -> {
+                // Permission is not granted, request it
+                cameraPermissionRequest.launch(Manifest.permission.CAMERA)
+            }
+        }
     }
 
     @Deprecated("Deprecated in Java")
