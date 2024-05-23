@@ -44,7 +44,9 @@ class TFLiteHelper(private val context: Activity) {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
-    fun classifyImage(bitmap: Bitmap): String? {
+    data class ClassificationResult(val label: String, val score: Float)
+
+    fun classifyImage(bitmap: Bitmap): ClassificationResult? {
         val imageTensorIndex = 0
         val imageShape = tflite.getInputTensor(imageTensorIndex).shape() // {1, height, width, 3}
         val imageSizeY = imageShape[1]
@@ -72,14 +74,11 @@ class TFLiteHelper(private val context: Activity) {
 
         val labeledProbability = TensorLabel(labels, probabilityProcessor.process(outputProbabilityBuffer))
             .mapWithFloatValue
-        val maxValueInMap = (labeledProbability.values).maxOrNull()
-        var result: String? = null
-        labeledProbability.forEach { (key, value) ->
-            if (value == maxValueInMap) {
-                result = key
-            }
-        }
 
-        return result
+        val maxEntry = labeledProbability.maxByOrNull { it.value }
+
+        return maxEntry?.let {
+            ClassificationResult(it.key, it.value)
+        }
     }
 }

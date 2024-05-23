@@ -16,7 +16,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "BASE_URL", "\"https://newsapi.org/\"")
+        buildConfigField("String", "BASE_URL", "\"https://newsapi.org/v2/\"")
         buildConfigField("String", "API_KEY", "\"51314361e89642cb94dca424286c7054\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -93,6 +93,8 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    implementation("androidx.browser:browser:1.8.0")
 
 
 }

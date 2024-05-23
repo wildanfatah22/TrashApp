@@ -21,21 +21,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-//    @Provides
-//    @Singleton
-//    fun providesApiML(): MlApiService {
-//        val loggingInterceptor =
-//            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-//        val client = OkHttpClient.Builder()
-//            .addInterceptor(loggingInterceptor)
-//            .build()
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl("https://127.0.0.1:5000/")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .client(client)
-//            .build()
-//        return retrofit.create(MlApiService::class.java)
-//    }
 
     @Provides
     @Singleton
@@ -46,7 +31,8 @@ object AppModule {
             .addInterceptor(loggingInterceptor)
             .build()
         val retrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.API_KEY)
+            .baseUrl(BuildConfig.BASE_URL
+            )
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
@@ -70,6 +56,5 @@ object AppModule {
     ): AppRepository {
         return AppRepositoryImpl(articleApi, database)
     }
-
 
 }

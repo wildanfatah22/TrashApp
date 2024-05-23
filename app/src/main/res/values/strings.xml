@@ -28,5 +28,11 @@
     <string name="cardboard_guide">Benda ini terbuat dari kardus, yang juga bisa didaur ulang. Pastikan untuk melipatnya dengan rapi dan membuangnya ke dalam tempat sampah kardus agar dapat didaur ulang dengan efisien.</string>
     <string name="plastic_guide">Benda ini terbuat dari plastik, yang bisa menjadi masalah lingkungan jika tidak didaur ulang dengan benar. Pastikan untuk membuangnya ke dalam tempat sampah plastik yang sesuai agar dapat didaur ulang dan mengurangi limbah plastik yang mencemari lingkungan.</string>
     <string name="default_guide">Hasil analisis tidak sesuai dengan jenis sampah yang dikenali. Mohon pastikan untuk membuangnya ke dalam tempat sampah yang sesuai agar dapat diolah dengan benar sesuai peraturan daerah Anda.</string>
+    <string name="riwayat_scan">Scan History</string>
+    <string name="no_history">No history is saved</string>
+    <string name="error_message">An error occurred while loading data</string>
+    <string name="swipe_down_message">Swipe down to reload</string>
+    <string name="delete_scan_history">Delete scan history</string>
+    <string name="no_current_news">No current news</string>
 
 </resources>

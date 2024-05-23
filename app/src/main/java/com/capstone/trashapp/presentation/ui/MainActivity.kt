@@ -19,7 +19,9 @@ import com.capstone.trashapp.utils.TFLiteHelper
 import com.google.android.material.snackbar.Snackbar
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
+import org.tensorflow.lite.task.vision.classifier.Classifications
 import java.io.File
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -83,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             topbar.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.article -> {
-                        val articleIntent = Intent(this@MainActivity, ArticleActivity::class.java)
+                        val articleIntent = Intent(this@MainActivity, NewsActivity::class.java)
                         startActivity(articleIntent)
                         true
                     }
@@ -134,14 +136,15 @@ class MainActivity : AppCompatActivity() {
         val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, currentImageUri)
 
         // Perform image classification using TFLiteHelper
-        val label = tfHelper?.classifyImage(bitmap)
+        val classificationResult = tfHelper?.classifyImage(bitmap)
 
         // Move to result activity or display result as needed
-        label?.let {
+        classificationResult?.let {
             // Example: move to result activity
-            moveToResult(0, it)
+            moveToResult((it.score * 100).roundToInt(), it.label)
         }
     }
+
 
     private fun uCrop(sourceUri: Uri) {
         val fileName = "preview_cropped.jpg"
