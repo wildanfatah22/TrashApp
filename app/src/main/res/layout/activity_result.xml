@@ -78,21 +78,21 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/indicator" />
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <ProgressBar
-                android:id="@+id/indicator"
-                style="@style/CircularDeterminateProgressBar"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_marginTop="32dp"
-                android:indeterminateOnly="false"
-                android:progress="0"
-                android:progressDrawable="@drawable/progress_circle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:progress="0" />
+<!--            <ProgressBar-->
+<!--                android:id="@+id/indicator"-->
+<!--                style="@style/CircularDeterminateProgressBar"-->
+<!--                android:layout_width="150dp"-->
+<!--                android:layout_height="150dp"-->
+<!--                android:layout_marginTop="32dp"-->
+<!--                android:indeterminateOnly="false"-->
+<!--                android:progress="0"-->
+<!--                android:progressDrawable="@drawable/progress_circle"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                tools:progress="0" />-->
 
             <Button
                 android:id="@+id/btnSave"
@@ -121,20 +121,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/result_text" />
 
-            <TextView
-                android:id="@+id/tvScore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:text="@string/_0_persen"
-                android:textAlignment="center"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/result_text"
-                app:layout_constraintEnd_toEndOf="@+id/indicator"
-                app:layout_constraintStart_toStartOf="@+id/indicator"
-                app:layout_constraintTop_toTopOf="@+id/indicator"
-                app:layout_constraintVertical_bias=".48" />
+<!--            <TextView-->
+<!--                android:id="@+id/tvScore"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:includeFontPadding="false"-->
+<!--                android:text="@string/_0_persen"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textSize="32sp"-->
+<!--                android:textStyle="bold"-->
+<!--                app:layout_constraintBottom_toTopOf="@+id/result_text"-->
+<!--                app:layout_constraintEnd_toEndOf="@+id/indicator"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/indicator"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/indicator"-->
+<!--                app:layout_constraintVertical_bias=".48" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>

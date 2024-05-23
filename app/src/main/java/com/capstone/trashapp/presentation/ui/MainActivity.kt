@@ -7,32 +7,25 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import com.capstone.trashapp.BuildConfig
 import com.capstone.trashapp.R
 import com.capstone.trashapp.databinding.ActivityMainBinding
 import com.capstone.trashapp.utils.TFLiteHelper
 import com.google.android.material.snackbar.Snackbar
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
-import org.tensorflow.lite.task.vision.classifier.Classifications
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -51,22 +44,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val launcherCamera = registerForActivityResult(
-        ActivityResultContracts.TakePicture()
-    ) { success: Boolean ->
-        if (success) {
-            currentImageUri?.let { uri ->
-                uCrop(uri)
+    private val imageCaptureLauncher =
+        registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+            // Store the captured image and proceed to crop
+            if (bitmap != null) {
+                storeImage(bitmap)
             }
         }
-    }
-
-    private val imageCaptureLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        // Store the captured image and proceed to crop
-        if (bitmap != null) {
-            storeImage(bitmap)
-        }
-    }
 
 
     override fun onResume() {
@@ -140,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         if (fileUri != null) {
             uCrop(fileUri)
         } else {
-            showToast("Failed to save image")
+            showToast("Gagal menyimpan gambar")
         }
     }
 
@@ -194,11 +178,9 @@ class MainActivity : AppCompatActivity() {
 
         // Perform image classification using TFLiteHelper
         val classificationResult = tfHelper?.classifyImage(bitmap)
-
-        // Move to result activity or display result as needed
         classificationResult?.let {
             // Example: move to result activity
-            moveToResult((it.score * 100).roundToInt(), it.label)
+            moveToResult((it.score * 10000).roundToInt(), it.label)
         }
     }
 
@@ -246,19 +228,23 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private val cameraPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            // Permission is granted, launch camera activity
-            openCamera()
-        } else {
-            // Permission is denied, show an explanation or request again
-            Toast.makeText(this, "Camera permission is required", Toast.LENGTH_SHORT).show()
+    private val cameraPermissionRequest =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // Permission is granted, launch camera activity
+                openCamera()
+            } else {
+                // Permission is denied, show an explanation or request again
+                Toast.makeText(this, "Camera permission is required", Toast.LENGTH_SHORT).show()
+            }
         }
-    }
 
     private fun checkCameraPermission() {
-        when {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
+        when (PackageManager.PERMISSION_GRANTED) {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) -> {
                 // Permission is already granted, launch camera activity
                 openCamera()
             }
