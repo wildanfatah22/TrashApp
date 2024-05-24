@@ -16,7 +16,7 @@ import javax.inject.Inject
 class ResultViewModel @Inject constructor(
     private val repository: AppRepository
 ) : ViewModel() {
-    fun saveScan(label: String, confidenceScore: Int, file: File) {
+    fun saveScan(label: String, confidenceScore: Float, file: File) {
         viewModelScope.launch {
             val blob = imageFileToByteArray(file)
             repository.saveScanToHistory(

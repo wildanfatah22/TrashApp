@@ -34,5 +34,6 @@
     <string name="swipe_down_message">Geser ke bawah untuk memuat ulang</string>
     <string name="delete_scan_history">Hapus riwayat</string>
     <string name="no_current_news">Tidak ada berita</string>
+    <string name="percent">60%</string>
 
 </resources>

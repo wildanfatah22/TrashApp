@@ -5,12 +5,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -19,6 +20,7 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.capstone.trashapp.R
 import com.capstone.trashapp.databinding.ActivityMainBinding
+import com.capstone.trashapp.utils.ImageClassifierHelper
 import com.capstone.trashapp.utils.TFLiteHelper
 import com.google.android.material.snackbar.Snackbar
 import com.yalantis.ucrop.UCrop
@@ -28,12 +30,13 @@ import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.math.roundToInt
 
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var currentImageUri: Uri? = null
     private var tfHelper: TFLiteHelper? = null
-
+    private var imgHelper: ImageClassifierHelper? = null
     private val launcherGallery = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
@@ -64,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         tfHelper = TFLiteHelper(this)
+        imgHelper = ImageClassifierHelper(this)
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey("currentImageUri")) {
                 currentImageUri = Uri.parse(savedInstanceState.getString("currentImageUri"))
@@ -89,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                 startGallery()
             }
             btnAnalyze.setOnClickListener {
-                analyzeImage()
+                processImage()
             }
             btnClear.setOnClickListener {
                 currentImageUri = null
@@ -167,22 +171,43 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun analyzeImage() {
+    private fun processImage() {
         val tempCurrentImageUri = currentImageUri
         if (tempCurrentImageUri == null) {
             showGallerySnackbar()
             return
         }
         val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, tempCurrentImageUri)
-
-        // Perform image classification using TFLiteHelper
-        val classificationResult = tfHelper?.classifyImage(bitmap)
-        classificationResult?.let {
-            // Example: move to result activity
-            moveToResult((it.score * 10000).roundToInt(), it.label)
+        val classificationResult = imgHelper?.classifyImage(bitmap)
+        if (classificationResult != null) {
+            Log.d("MainActivity", "Classification Result: Confidence=${classificationResult.confidence}, ClassName=${classificationResult.className}")
+            moveToResult(classificationResult.confidence, classificationResult.className)
+        } else {
+            Toast.makeText(this, "Error in classification", Toast.LENGTH_SHORT).show()
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        imgHelper?.close()
+    }
+
+
+//    private fun analyzeImage() {
+//        val tempCurrentImageUri = currentImageUri
+//        if (tempCurrentImageUri == null) {
+//            showGallerySnackbar()
+//            return
+//        }
+//        val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, tempCurrentImageUri)
+//
+//        // Perform image classification using TFLiteHelper
+//        val classificationResult = tfHelper?.classifyImage(bitmap)
+//        classificationResult?.let {
+//            // Example: move to result activity
+//            moveToResult((it.score * 100).roundToInt(), it.label)
+//        }
+//    }
 
 
     private fun uCrop(sourceUri: Uri) {
@@ -203,7 +228,7 @@ class MainActivity : AppCompatActivity() {
             .start(this)
     }
 
-    private fun moveToResult(score: Int, label: String) {
+    private fun moveToResult(score: Float, label: String) {
         val intent = Intent(this, ResultActivity::class.java).apply {
             putExtra(ResultActivity.EXTRA_SCORE, score)
             putExtra(ResultActivity.EXTRA_IMAGE_URI, currentImageUri.toString())
