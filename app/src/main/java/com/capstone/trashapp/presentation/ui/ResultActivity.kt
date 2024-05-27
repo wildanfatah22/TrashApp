@@ -62,7 +62,61 @@ class ResultActivity : AppCompatActivity() {
                         text = getString(R.string.plastic_guide)
                     }
                 }
-                // ... (other cases)
+                "Paper" -> {
+                    indicator.progressDrawable = AppCompatResources.getDrawable(
+                        this@ResultActivity, R.drawable.progress_circle
+                    )
+                    tvGuide.apply {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+                        }
+                        text = getString(R.string.paper_guide)
+                    }
+                }
+                "Organic" -> {
+                    indicator.progressDrawable = AppCompatResources.getDrawable(
+                        this@ResultActivity, R.drawable.progress_circle
+                    )
+                    tvGuide.apply {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+                        }
+                        text = getString(R.string.organic_guide)
+                    }
+                }
+                "Glass" -> {
+                    indicator.progressDrawable = AppCompatResources.getDrawable(
+                        this@ResultActivity, R.drawable.progress_circle
+                    )
+                    tvGuide.apply {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+                        }
+                        text = getString(R.string.glass_guide)
+                    }
+                }
+                "Metal" -> {
+                    indicator.progressDrawable = AppCompatResources.getDrawable(
+                        this@ResultActivity, R.drawable.progress_circle
+                    )
+                    tvGuide.apply {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+                        }
+                        text = getString(R.string.metal_guide)
+                    }
+                }
+                "Cardboard" -> {
+                    indicator.progressDrawable = AppCompatResources.getDrawable(
+                        this@ResultActivity, R.drawable.progress_circle
+                    )
+                    tvGuide.apply {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+                        }
+                        text = getString(R.string.cardboard_guide)
+                    }
+                }
                 else -> {
                     indicator.progressDrawable = AppCompatResources.getDrawable(
                         this@ResultActivity, R.drawable.progress_circle
