@@ -3,6 +3,7 @@ package com.capstone.trashapp.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
+import com.capstone.trashapp.ml.ModelDensenetSgd
 import com.capstone.trashapp.ml.ModelInceptionSgd
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
@@ -17,7 +18,7 @@ class ImageClassifierHelper(context: Context) {
         private const val imageSize = 224
     }
 
-    private val model: ModelInceptionSgd = ModelInceptionSgd.newInstance(context)
+    private val model: ModelDensenetSgd = ModelDensenetSgd.newInstance(context)
     private val classes = arrayOf("Cardboard", "Glass", "Metal", "Organic", "Paper", "Plastic")
 
     fun close() {
