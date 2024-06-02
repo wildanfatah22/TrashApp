@@ -21,21 +21,18 @@ import androidx.core.view.isVisible
 import com.capstone.trashapp.R
 import com.capstone.trashapp.databinding.ActivityMainBinding
 import com.capstone.trashapp.utils.ImageClassifierHelper
-import com.capstone.trashapp.utils.TFLiteHelper
 import com.google.android.material.snackbar.Snackbar
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var currentImageUri: Uri? = null
-    private var tfHelper: TFLiteHelper? = null
     private var imgHelper: ImageClassifierHelper? = null
     private val launcherGallery = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -66,7 +63,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        tfHelper = TFLiteHelper(this)
         imgHelper = ImageClassifierHelper(this)
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey("currentImageUri")) {
@@ -180,7 +176,8 @@ class MainActivity : AppCompatActivity() {
         val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, tempCurrentImageUri)
         val classificationResult = imgHelper?.classifyImage(bitmap)
         if (classificationResult != null) {
-            Log.d("MainActivity", "Classification Result: Confidence=${classificationResult.confidence}, ClassName=${classificationResult.className}")
+            Log.d("MainActivity", "Classification Result: Confidence=${classificationResult.confidence}," +
+                    " ClassName=${classificationResult.className}")
             moveToResult(classificationResult.confidence, classificationResult.className)
         } else {
             Toast.makeText(this, "Error in classification", Toast.LENGTH_SHORT).show()
@@ -191,24 +188,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         imgHelper?.close()
     }
-
-
-//    private fun analyzeImage() {
-//        val tempCurrentImageUri = currentImageUri
-//        if (tempCurrentImageUri == null) {
-//            showGallerySnackbar()
-//            return
-//        }
-//        val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, tempCurrentImageUri)
-//
-//        // Perform image classification using TFLiteHelper
-//        val classificationResult = tfHelper?.classifyImage(bitmap)
-//        classificationResult?.let {
-//            // Example: move to result activity
-//            moveToResult((it.score * 100).roundToInt(), it.label)
-//        }
-//    }
-
 
     private fun uCrop(sourceUri: Uri) {
         val fileName = "preview_cropped.jpg"
