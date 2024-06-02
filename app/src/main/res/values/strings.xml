@@ -1,15 +1,15 @@
 <resources>
     <string name="app_name">TrashApp</string>
-    <string name="history">History</string>
-    <string name="article">article</string>
+    <string name="history">Riwayat</string>
+    <string name="article">Artikel</string>
     <string name="ecobin">EcoBin</string>
-    <string name="classify_your_waste">Classify your waste!</string>
-    <string name="please_select_a_photo_of_waste_to_analyze_the_waste_classification">Please select a photo of waste to analyze the waste classification</string>
-    <string name="gallery">Gallery</string>
-    <string name="camera">Camera</string>
-    <string name="select_image">Select image!</string>
-    <string name="prediction">Prediction:</string>
-    <string name="accuracy">Accuracy</string>
+    <string name="classify_your_waste">Klasifikasikan sampah Anda!</string>
+    <string name="please_select_a_photo_of_waste_to_analyze_the_waste_classification">Silakan pilih foto sampah untuk menganalisis klasifikasi sampah</string>
+    <string name="gallery">Galeri</string>
+    <string name="camera">Kamera</string>
+    <string name="select_image">Pilih Gambar!</string>
+    <string name="prediction">Prediksi:</string>
+    <string name="accuracy">Akurasi</string>
     <string name="result">Hasil Analisis</string>
     <string name="_0_persen">0%</string>
     <string name="result_guest">Hasil deteksi</string>
@@ -18,8 +18,8 @@
     <string name="preview_gambar">Preview Gambar</string>
     <string name="pilihlah_gambar_dari_galeri_terlebih_dahulu">Pilihlah gambar dari galeri atau gunakan kamera</string>
     <string name="reset">Reset</string>
-    <string name="analyze">Analyze</string>
-    <string name="image_classifier_failed">Image classifier failed to initialize. See error logs for details</string>
+    <string name="analyze">Analisa</string>
+    <string name="image_classifier_failed">Pengklasifikasi gambar gagal diinisialisasi. Lihat log kesalahan untuk detailnya</string>
     <string name="score_percent">%1$d%%</string>
     <string name="metal_guide">Benda ini terbuat dari logam, yang merupakan bahan yang dapat didaur ulang. Pastikan untuk membuangnya ke dalam tempat sampah yang sesuai agar dapat didaur ulang dan membantu menjaga lingkungan.</string>
     <string name="glass_guide">Benda ini terbuat dari kaca, yang juga merupakan bahan yang dapat didaur ulang. Mohon membuangnya ke dalam tempat sampah kaca agar dapat didaur ulang dan mengurangi pencemaran lingkungan.</string>
@@ -28,5 +28,12 @@
     <string name="cardboard_guide">Benda ini terbuat dari kardus, yang juga bisa didaur ulang. Pastikan untuk melipatnya dengan rapi dan membuangnya ke dalam tempat sampah kardus agar dapat didaur ulang dengan efisien.</string>
     <string name="plastic_guide">Benda ini terbuat dari plastik, yang bisa menjadi masalah lingkungan jika tidak didaur ulang dengan benar. Pastikan untuk membuangnya ke dalam tempat sampah plastik yang sesuai agar dapat didaur ulang dan mengurangi limbah plastik yang mencemari lingkungan.</string>
     <string name="default_guide">Hasil analisis tidak sesuai dengan jenis sampah yang dikenali. Mohon pastikan untuk membuangnya ke dalam tempat sampah yang sesuai agar dapat diolah dengan benar sesuai peraturan daerah Anda.</string>
+    <string name="riwayat_scan">Riwayat scan</string>
+    <string name="no_history">Tidak ada riwayat yang disimpan</string>
+    <string name="error_message">Tidak ada riwayat yang disimpan</string>
+    <string name="swipe_down_message">Geser ke bawah untuk memuat ulang</string>
+    <string name="delete_scan_history">Hapus riwayat</string>
+    <string name="no_current_news">Tidak ada berita</string>
+    <string name="percent">60%</string>
 
 </resources>

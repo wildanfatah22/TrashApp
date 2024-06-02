@@ -2,92 +2,82 @@ package com.capstone.trashapp.utils
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.net.Uri
-import android.os.Build
-import android.os.SystemClock
-import android.provider.MediaStore
-import android.util.Log
-import com.capstone.trashapp.R
+import android.media.ThumbnailUtils
+import com.capstone.trashapp.ml.ModelDensenetSgd
+import com.capstone.trashapp.ml.ModelInceptionSgd
 import org.tensorflow.lite.DataType
-import org.tensorflow.lite.support.common.ops.CastOp
-import org.tensorflow.lite.support.image.ImageProcessor
-import org.tensorflow.lite.support.image.TensorImage
-import org.tensorflow.lite.support.image.ops.ResizeOp
-import org.tensorflow.lite.task.core.BaseOptions
-import org.tensorflow.lite.task.vision.classifier.Classifications
-import org.tensorflow.lite.task.vision.classifier.ImageClassifier
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 
-class ImageClassifierHelper(
-    private var threshold: Float = 0.1f,
-    private var maxResults: Int = 3,
-    private val modelName: String = "cancer_classification.tflite",
-    val context: Context,
-    val classifierListener: ClassifierListener?
-) {
-    private var imageClassifier: ImageClassifier? = null
-
-    interface ClassifierListener {
-        fun onError(error: String)
-        fun onResults(
-            results: List<Classifications>?,
-            inferenceTime: Long
-        )
-    }
-
-    init {
-        setupImageClassifier()
-    }
-
-    private fun setupImageClassifier() {
-        val optionsBuilder = ImageClassifier.ImageClassifierOptions.builder()
-            .setScoreThreshold(threshold)
-            .setMaxResults(maxResults)
-        val baseOptionsBuilder = BaseOptions.builder()
-            .setNumThreads(4)
-        optionsBuilder.setBaseOptions(baseOptionsBuilder.build())
-        try {
-            imageClassifier = ImageClassifier.createFromFileAndOptions(
-                context,
-                modelName,
-                optionsBuilder.build()
-            )
-        } catch (e: IllegalStateException) {
-            classifierListener?.onError(context.getString(R.string.image_classifier_failed))
-            Log.e(TAG, e.message.toString())
-        }
-    }
-
-    fun classifyStaticImage(imageUri: Uri) {
-        if (imageClassifier == null) {
-            setupImageClassifier()
-        }
-
-        val imageProcessor = ImageProcessor.Builder()
-            .add(ResizeOp(224, 224, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
-            .add(CastOp(DataType.UINT8))
-            .build()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val source = ImageDecoder.createSource(context.contentResolver, imageUri)
-            ImageDecoder.decodeBitmap(source)
-        } else {
-            @Suppress("DEPRECATION")
-            MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
-        }.copy(Bitmap.Config.ARGB_8888, true)?.let { bitmap ->
-            val tensorImage = imageProcessor.process(TensorImage.fromBitmap(bitmap))
-            var inferenceTime = SystemClock.uptimeMillis()
-            val results = imageClassifier?.classify(tensorImage)
-            inferenceTime = SystemClock.uptimeMillis() - inferenceTime
-            classifierListener?.onResults(
-                results,
-                inferenceTime
-            )
-        }
-    }
+class ImageClassifierHelper(context: Context) {
 
     companion object {
         private const val TAG = "ImageClassifierHelper"
+        private const val imageSize = 224
     }
 
+    private val model: ModelDensenetSgd = ModelDensenetSgd.newInstance(context)
+    private val classes = arrayOf("Cardboard", "Glass", "Metal", "Organic", "Paper", "Plastic")
+
+    fun close() {
+        model.close()
+    }
+
+    fun classifyImage(image: Bitmap): ClassificationResult {
+        // Resize image to the required input size of the model
+        var dimension = Math.min(image.width, image.height)
+        var resizedImage = ThumbnailUtils.extractThumbnail(image, dimension, dimension)
+        resizedImage = Bitmap.createScaledBitmap(resizedImage, imageSize, imageSize, false)
+
+        // Convert Bitmap to ByteBuffer
+        val byteBuffer = convertBitmapToByteBuffer(resizedImage)
+
+        // Create TensorBuffer for input
+        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, imageSize, imageSize, 3), DataType.FLOAT32)
+        inputFeature0.loadBuffer(byteBuffer)
+
+        // Run inference
+        val outputs = model.process(inputFeature0)
+        val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+        // Process the output to get class and confidence
+        val confidences = outputFeature0.floatArray
+        var maxPos = 0
+        var maxConfidence = 0f
+        for (i in confidences.indices) {
+            if (confidences[i] > maxConfidence) {
+                maxConfidence = confidences[i]
+                maxPos = i
+            }
+        }
+
+        // Return the result
+        val className = classes[maxPos]
+        val confidence = confidences[maxPos]
+        return ClassificationResult(className, confidence)
+    }
+
+    private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
+        val byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3)
+        byteBuffer.order(ByteOrder.nativeOrder())
+
+        val intValues = IntArray(imageSize * imageSize)
+        bitmap.getPixels(intValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+        var pixel = 0
+        for (i in 0 until imageSize) {
+            for (j in 0 until imageSize) {
+                val value = intValues[pixel++] // RGB
+                byteBuffer.putFloat(((value shr 16) and 0xFF) * (1f / 255f))
+                byteBuffer.putFloat(((value shr 8) and 0xFF) * (1f / 255f))
+                byteBuffer.putFloat((value and 0xFF) * (1f / 255f))
+            }
+        }
+
+        return byteBuffer
+    }
+
+    data class ClassificationResult(val className: String, val confidence: Float)
 }
+

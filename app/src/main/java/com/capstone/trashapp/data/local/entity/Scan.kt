@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 data class Scan(
     @field:PrimaryKey(autoGenerate = true) @field:ColumnInfo(name = "id") val id: Int = 0,
     @field:ColumnInfo(name = "label") val label: String,
-    @field:ColumnInfo(name = "confidence_score") val confidenceScore: Int,
+    @field:ColumnInfo(name = "confidence_score") val confidenceScore: Float,
     @field:ColumnInfo(
         name = "scan_img_blob",
         typeAffinity = ColumnInfo.BLOB

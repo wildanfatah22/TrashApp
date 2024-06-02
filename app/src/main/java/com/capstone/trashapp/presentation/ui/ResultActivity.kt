@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -36,14 +37,20 @@ class ResultActivity : AppCompatActivity() {
 
     private fun initUI() {
         val isNewScan = intent.getBooleanExtra(EXTRA_NEW_RESULT, true)
+        val score = intent.getFloatExtra(EXTRA_SCORE, 0f)
+        val label = intent.getStringExtra(EXTRA_LABEL)
+        val imageUri = intent.getStringExtra(EXTRA_IMAGE_URI)
+
+        Log.d("ResultActivity", "Received data: Score=$score, Label=$label, ImageUri=$imageUri")
+
         with(binding) {
             if (isNewScan) {
                 btnSave.isVisible = true
             } else {
                 btnSave.isInvisible = true
             }
-            resultImage.setImageURI(Uri.parse(intent.getStringExtra(EXTRA_IMAGE_URI)))
-            when (intent.getStringExtra(EXTRA_LABEL)) {
+            resultImage.setImageURI(Uri.parse(imageUri))
+            when (label) {
                 "Plastic" -> {
                     indicator.progressDrawable = AppCompatResources.getDrawable(
                         this@ResultActivity, R.drawable.progress_circle
@@ -110,7 +117,6 @@ class ResultActivity : AppCompatActivity() {
                         text = getString(R.string.cardboard_guide)
                     }
                 }
-
                 else -> {
                     indicator.progressDrawable = AppCompatResources.getDrawable(
                         this@ResultActivity, R.drawable.progress_circle
@@ -123,17 +129,17 @@ class ResultActivity : AppCompatActivity() {
                     }
                 }
             }
-            val animator = ValueAnimator.ofInt(0, intent.getIntExtra(EXTRA_SCORE, 0))
+            val animator = ValueAnimator.ofFloat(0f, score)
             indicator.setProgress(0, true)
             animator.interpolator = AccelerateDecelerateInterpolator()
             animator.startDelay = 0
-            animator.setDuration(2000)
+            animator.duration = 2000
             animator.addUpdateListener { valueAnimator ->
-                val value = valueAnimator.animatedValue as Int
-                indicator.setProgress(value, true)
+                val value = valueAnimator.animatedValue as Float
+                indicator.setProgress((value * 100).toInt(), true)  // convert float score to percentage
             }
-            resultText.text = intent.getStringExtra(EXTRA_LABEL)
-            tvScore.text = getString(R.string.score_percent, intent.getIntExtra(EXTRA_SCORE, 0))
+            resultText.text = label
+            tvScore.text = getString(R.string.score_percent, (score * 100).toInt())  // convert float score to percentage
             animator.start()
         }
     }
@@ -146,7 +152,7 @@ class ResultActivity : AppCompatActivity() {
             btnSave.setOnClickListener {
                 val path = Uri.parse(intent.getStringExtra(EXTRA_IMAGE_URI)).path
                 val label = intent.getStringExtra(EXTRA_LABEL)
-                val confidenceScore = intent.getIntExtra(EXTRA_SCORE, 0)
+                val confidenceScore = intent.getFloatExtra(EXTRA_SCORE, 0f)
                 if (path == null || label == null) {
                     Toast.makeText(
                         this@ResultActivity, "Gagal menyimpan hasil scan", Toast.LENGTH_SHORT
